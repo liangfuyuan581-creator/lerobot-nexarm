@@ -187,6 +187,36 @@ python -m lerobot.scripts.lerobot_teleoperate \
   --fps=30
 ```
 
+### Motion Speed and Acceleration
+
+The follower arm's motion profile is controlled by two parameters in `NexArmFollowerConfig` (or via the YAML / command line):
+
+| Parameter | Default | Range | Description |
+|-----------|---------|-------|-------------|
+| `motion_speed` | `2000` | 0–3400 | Maximum servo speed in raw units/s. `0` = no limit. |
+| `motion_acc` | `100` | 0–254 | Acceleration ramp. `0` = instant (max acceleration). Higher = smoother ramp. |
+
+These are applied once at connection time via the firmware. You can override them in `examples/nexarm/teleoperate.yaml`:
+
+```yaml
+robot:
+  type: nexarm_follower
+  port: COM19
+  motion_speed: 2000   # adjust for faster or slower movement
+  motion_acc: 100      # adjust for harder or softer acceleration
+```
+
+Or on the command line:
+
+```bash
+python -m lerobot.scripts.lerobot_teleoperate \
+  --robot.type=nexarm_follower --robot.port=COM19 \
+  --robot.motion_speed=2000 --robot.motion_acc=100 \
+  --teleop.type=nexarm_leader --teleop.port=COM18
+```
+
+> Note: the firmware handles speed/acceleration limiting internally — no software-side delta clamping is applied.
+
 **What to check:**
 - Follower tracks the leader smoothly across all joints.
 - `shoulder_lift` direction is automatically mirrored.
